@@ -1,293 +1,314 @@
-char mensaje[] = "Hola Mundo";
-
-// Create variable to define the output pins
-int ledVerde = 12;      // blink an led on output 12
-int ledRojo = 6;        // blink an led on output 6
-int zumbador = 8;      // output audio on pin 8
-int nota = 1200;      // music note/pitch
-
-
-int tamPunto = 100;     // length of the morse code 'dot'
-int tamLinea = tamPunto * 3;    // length of the morse code 'dash'
-int pausas = tamPunto;  // length of the pause between elements of a character
-int espacios = tamPunto * 3;     // length of the espacios between characters
-int pausasPalabra = tamPunto * 7;  // length of the pause between words
-
-// the setup routine runs once when you press reset:
-void setup() {                
-  // initialize the digital pin as an output for LED lights.
-  pinMode(ledVerde, OUTPUT); 
-  pinMode(ledRojo, OUTPUT); 
-}
-
-// Create a loop of the letters/words you want to output in morse code (defined in string at top of code)
-void loop()
-{ 
-  // Loop through the string and get each character one at a time until the end is reached
-  for (int i = 0; i < sizeof(mensaje) - 1; i++)
-  {
-    // Get the character in the current position
-  char caracTmp = mensaje[i];
-  // Set the case to lower case
-  caracTmp = toLowerCase(caracTmp);
-  // Call the subroutine to get the morse code equivalent for this character
-  GetChar(caracTmp);
-  }
+/*
+  Morse Code Project (Variacion para introducir cadenas por el Monitor Serie )
   
-  // At the end of the string long pause before looping and starting again
-  apagadoLuces(8000);      
+  Este codigo recorre una cadena de caracteres introducida por el Monitor Serie y los transforma en codigo morse.  
+  La salida hace que se iluminen dos leds y suene un pitido largo o corto por un zumbador piezoelectrico.  
+ */
+
+
+// creamos las variables para los pines de salida
+int led12 = 12;      // parpadea un led en la salida del pin 12
+int led6 = 6;        // parpadea un led en la salida del pin 6
+int audio8 = 8;      // salida de audio en el pin 8
+int note = 1200;      // nota inicial-Periodo de la onda
+
+/*
+ Ajustamos la velocidad del codigo morse (dot=>punto ; dash=>raya)
+ Ajustamos 'dotlen'= 'duracion del punto' que es la duracion del tono y responsable de la velocidad de nuestro codigo 
+  (todo el resto de duraciones estan relacionadas con 'dotlen')
+
+ Estas son las relaciones de duracion del tono de los distintos elementos en codigo morse:
+   duracion raya = duracion punto x 3
+   Pausa entre elementos = duracion punto
+    (pausa entre elementos de un caracter)
+   Pausa entre caracteres = duracion punto x 3
+   Pausa entre palabras = duracion punto x 7
+            Informacion extraida de aqui:
+            
+            http://www.nu-ware.com/NuCode%20Help/index.html?m...
+*/
+int dotLen = 100;     // Duracion del codigo morse 'punto'
+int dashLen = dotLen * 3;    // Duracion del codigo morse 'raya'
+int elemPause = dotLen;  // Duracion de la pausa entre elementos de un caracter
+int Spaces = dotLen * 3;     // Duracion del espacio entre caracteres
+int wordPause = dotLen * 7;  // Duracion de la pausa entre palabras
+
+
+// el 'setup' se realiza una vez que pulses el boton de 'reset'
+void setup() {                
+  //Inicializamos los pines digitales para las salidas de los diodos led 
+  pinMode(led12, OUTPUT); 
+  pinMode(led6, OUTPUT); 
+  Serial.begin(9600);
 }
 
-// DOT
-void puntosMorse()
-{
-  digitalWrite(ledVerde, HIGH);    // turn the LED on 
-  digitalWrite(ledRojo, HIGH); 
-  tone(zumbador, nota, tamPunto); // start playing a tone
-  delay(tamPunto);              // hold in this position
-}
+// Creamos un loop para recorrer la cadena definida en la parte superior del codigo 
 
-// DASH
-void lineasMorse()
-{
-  digitalWrite(ledVerde, HIGH);    // turn the LED on 
-  digitalWrite(ledRojo, HIGH);
-  tone(zumbador, nota, tamLinea);  // start playing a tone
-  delay(tamLinea);               // hold in this position
-}
-
-// Turn Off
-void apagadoLuces(int delayTime)
-{
-  digitalWrite(ledVerde, LOW);     // turn the LED off   
-  digitalWrite(ledRojo, LOW);
-  noTone(zumbador);             // stop playing a tone
-  delay(delayTime);             // hold in this position
-}
-
-// *** Characters to Morse Code Conversion *** //
-void GetChar(char caracTmp)
-{
-  // Take the passed character and use a switch case to find the morse code for that character
-  switch (caracTmp) {
-    case 'a': 
-    puntosMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'b':
-    lineasMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'c':
-      lineasMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'd':
-    lineasMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'e':
-    puntosMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'f':
-      puntosMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'g':
-    lineasMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'h':
-      puntosMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'i':
-      puntosMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'j':
-      puntosMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    break;
-      case 'k':
-      lineasMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'l':
-      puntosMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    break;
-      case 'm':
-      lineasMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'n':
-      lineasMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'o':
-      lineasMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'p':
-      puntosMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'q':
-      lineasMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'r':
-      puntosMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    break;
-    case 's':
-      puntosMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    break;
-    case 't':
-      lineasMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'u':
-      puntosMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'v':
-      puntosMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'w':
-      puntosMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'x':
-      lineasMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'y':
-      lineasMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    break;
-    case 'z':
-    lineasMorse();
-    apagadoLuces(pausas);
-    lineasMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    puntosMorse();
-    apagadoLuces(pausas);
-    break;
-    default: 
-    // If a matching character was not found it will default to a blank space
-    apagadoLuces(espacios);      
+void loop(){ 
+  // si hay caracteres los leemos en orden hasta que se agote la cadena. 
+  // Entonces finaliza el loop
+  if (Serial.available() > 0) {
+   char i = Serial.read();
+    
+        // Leemos el caracter
+ char tmpChar = i;
+ // Lo transformamos en minuscula
+ tmpChar = toLowerCase(tmpChar);
+ // Llamamos a la funcion correspondiente en codigo morse para este caracter
+ GetChar(tmpChar);   
   }
+}
+// PUNT (PUNTO)
+void MorseDot()
+{
+  digitalWrite(led12, HIGH);   // Encendemos el led
+  digitalWrite(led6, HIGH);     // Encendemos el led
+  tone(audio8, note, dotLen); // hacemos sonar una nota en el zumbador
+  delay(dotLen);              // mantenemos este estado
+}
+
+// DASH (RAYA)
+void MorseDash()
+{
+  digitalWrite(led12, HIGH);   // Encendemos el led
+  digitalWrite(led6, HIGH);     // Encendemos el led
+  tone(audio8, note, dashLen); // hacemos sonar una nota en el zumbador
+  delay(dashLen);               // mantenemos este estado
+}
+
+// Apagado
+void LightsOff(int delayTime)
+{
+  digitalWrite(led12, LOW);     // Apagamos el led   
+  digitalWrite(led6, LOW);      // Apagamos el led  
+  noTone(audio8);         // silenciamos el zumbador
+  delay(delayTime);             // mantenemos este estado
+}
+
+// * Listado de caracteres para la conversion a codigo morse * //
+void GetChar(char tmpChar)
+{
+ // Cogemos el caracter pasado por el loop que recorre la cadena, 
+        // y hacemos un 'switch case' para encontrar la funcion correspondiente al codigo morse de ese caracter.
+ switch (tmpChar) {
+   case 'a': 
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  break;
+   case 'b':
+  MorseDash();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  break;
+   case 'c':
+     MorseDash();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  break;
+   case 'd':
+  MorseDash();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  break;
+   case 'e':
+  MorseDot();
+  LightsOff(elemPause);
+  break;
+   case 'f':
+     MorseDot();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  break;
+   case 'g':
+  MorseDash();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  break;
+   case 'h':
+     MorseDot();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  break;
+   case 'i':
+     MorseDot();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  break;
+   case 'j':
+     MorseDot();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  break;
+      case 'k':
+     MorseDash();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  break;
+   case 'l':
+     MorseDot();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  break;
+      case 'm':
+     MorseDash();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  break;
+   case 'n':
+     MorseDash();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  break;
+   case 'o':
+     MorseDash();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  break;
+   case 'p':
+     MorseDot();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  break;
+   case 'q':
+     MorseDash();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  break;
+   case 'r':
+     MorseDot();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  break;
+   case 's':
+     MorseDot();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  break;
+   case 't':
+     MorseDash();
+  LightsOff(elemPause);
+  break;
+   case 'u':
+     MorseDot();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  break;
+   case 'v':
+     MorseDot();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  break;
+   case 'w':
+     MorseDot();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  break;
+   case 'x':
+     MorseDash();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  break;
+   case 'y':
+     MorseDash();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  break;
+   case 'z':
+     MorseDash();
+  LightsOff(elemPause);
+  MorseDash();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  MorseDot();
+  LightsOff(elemPause);
+  break;
+   default: 
+  // Si un caracter no se encuentra en la tabla, se deja un espacio en blanco
+  LightsOff(Spaces);   
+ }
 }
